@@ -262,6 +262,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+nb-configuration.xml
 
 ### OSX ###
 # General
@@ -303,5 +304,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+### Project Specific ###
+
+!lib/*
 
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,netbeans,eclipse,intellij,vscode,linux,windows,macos,osx
