@@ -308,5 +308,7 @@ $RECYCLE.BIN/
 ### Project Specific ###
 
 !lib/*
+.classpath
+.project
 
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,netbeans,eclipse,intellij,vscode,linux,windows,macos,osx
