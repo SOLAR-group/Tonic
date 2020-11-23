@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ucl.solar.tonic.print;
+package uk.ucl.solar.tonic.print.gi;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.pmw.tinylog.Logger;
 import uk.ucl.solar.tonic.exception.TonicException;
+import uk.ucl.solar.tonic.print.DefaultResultsPrinter;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
 /**
@@ -34,14 +35,41 @@ public class GIResultsPrinter extends DefaultResultsPrinter<PatchSolution> {
     protected List<String> patchColumnsNames;
     protected String patchFileName = "PATCH.csv";
 
-    public GIResultsPrinter(List<String> columns, File outputDir, List<PatchSolution> solutionList, List<Long> times) {
-        super(outputDir, solutionList, times);
-        this.patchColumnsNames = columns;
+    public GIResultsPrinter() {
     }
 
-    public GIResultsPrinter(List<String> columns, File outputDir, List<PatchSolution> solutionList, Long time) {
+    public GIResultsPrinter(List<String> patchColumnsNames) {
+        this.patchColumnsNames = patchColumnsNames;
+    }
+    
+    public GIResultsPrinter(File outputDir, List<String> patchColumnsNames) {
+        super(outputDir);
+        this.patchColumnsNames = patchColumnsNames;
+    }
+
+    public GIResultsPrinter(File outputDir, List<PatchSolution> solutionList, List<String> patchColumnsNames) {
+        super(outputDir, solutionList);
+        this.patchColumnsNames = patchColumnsNames;
+    }
+
+    public GIResultsPrinter(File outputDir, List<PatchSolution> solutionList, List<Long> times, List<String> patchColumnsNames) {
+        super(outputDir, solutionList, times);
+        this.patchColumnsNames = patchColumnsNames;
+    }
+
+    public GIResultsPrinter(File outputDir, List<PatchSolution> solutionList, Long time, List<String> patchColumnsNames) {
         super(outputDir, solutionList, time);
-        this.patchColumnsNames = columns;
+        this.patchColumnsNames = patchColumnsNames;
+    }
+
+    public GIResultsPrinter(File outputDir, List<PatchSolution> solutionList, List<Long> times, boolean shouldWriteHeaders, List<String> patchColumnsNames) {
+        super(outputDir, solutionList, times, shouldWriteHeaders);
+        this.patchColumnsNames = patchColumnsNames;
+    }
+
+    public GIResultsPrinter(File outputDir, List<PatchSolution> solutionList, Long time, boolean shouldWriteHeaders, List<String> patchColumnsNames) {
+        super(outputDir, solutionList, time, shouldWriteHeaders);
+        this.patchColumnsNames = patchColumnsNames;
     }
 
     public List<String> getPatchColumnsNames() {
@@ -63,17 +91,16 @@ public class GIResultsPrinter extends DefaultResultsPrinter<PatchSolution> {
     @Override
     public void print() throws IOException, TonicException {
         super.print();
-        printPatchesToFile();
+        this.printPatchesToFile();
     }
 
     private void printPatchesToFile() throws TonicException, IOException {
-        if (solutionList != null && !solutionList.isEmpty()) {
+        if (solutionList != null && !solutionList.isEmpty()
+                && patchColumnsNames != null && !patchColumnsNames.isEmpty()) {
             FileWriter writer = null;
             try {
                 writer = new FileWriter(FileUtils.getFile(outputDir, patchFileName));
-                if (patchColumnsNames != null && !patchColumnsNames.isEmpty()) {
-                    this.printHeader(patchColumnsNames, writer);
-                }
+                this.printHeader(patchColumnsNames, writer);
                 for (PatchSolution solution : solutionList) {
                     List<?> attributes = patchColumnsNames.stream()
                             .map(column -> solution.getAttribute(column))
@@ -81,13 +108,7 @@ public class GIResultsPrinter extends DefaultResultsPrinter<PatchSolution> {
                     this.printLine(attributes, writer);
                 }
             } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.error(ex, "Error closing file stream.");
-                    }
-                }
+                this.closeWriter(writer);
             }
         }
     }

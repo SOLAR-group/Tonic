@@ -36,7 +36,7 @@ import uk.ucl.solar.tonic.exception.TonicException;
  */
 public class DefaultResultsPrinter<S extends Solution> implements Serializable {
 
-    protected final File outputDir;
+    protected File outputDir;
     protected String separator = ",";
     protected String varFileName = "VAR.csv";
     protected String funFileName = "FUN.csv";
@@ -50,6 +50,9 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
 
     protected List<String> timeNames;
     protected List<Long> times;
+
+    public DefaultResultsPrinter() {
+    }
 
     public DefaultResultsPrinter(File outputDir) {
         this.outputDir = outputDir;
@@ -84,6 +87,14 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
         this.solutionList = solutionList;
         this.times = Lists.newArrayList(time);
         this.shouldPrintHeaders = shouldWriteHeaders;
+    }
+
+    public File getOutputDir() {
+        return outputDir;
+    }
+
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
     }
 
     public boolean getShouldWriteHeaders() {
@@ -218,13 +229,7 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
                     printLine(solution.getVariables(), writer);
                 }
             } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.error(ex, "Error closing file stream.");
-                    }
-                }
+                this.closeWriter(writer);
             }
         }
     }
@@ -256,13 +261,7 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
                     this.printLine(objectives, writer);
                 }
             } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.error(ex, "Error closing file stream.");
-                    }
-                }
+                this.closeWriter(writer);
             }
         }
     }
@@ -280,13 +279,18 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
                 }
                 printLine(times, writer);
             } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        Logger.error(ex, "Error closing file stream.");
-                    }
-                }
+                this.closeWriter(writer);
+            }
+        }
+    }
+
+    protected void closeWriter(FileWriter writer) throws IOException {
+        if (writer != null) {
+            try {
+                writer.close();
+            } catch (IOException ex) {
+                Logger.error(ex, "Error closing file stream.");
+                throw ex;
             }
         }
     }

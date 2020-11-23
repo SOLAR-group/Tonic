@@ -18,9 +18,9 @@ package uk.ucl.solar.tonic.solution;
 import gin.Patch;
 import gin.SourceFile;
 import gin.edit.Edit;
+import java.util.HashMap;
 import java.util.List;
 import org.uma.jmetal.solution.AbstractSolution;
-import org.uma.jmetal.solution.Solution;
 
 /**
  *
@@ -33,9 +33,16 @@ public class PatchSolution extends AbstractSolution<Edit> {
     /**
      * Constructor
      */
-    public PatchSolution(PatchSolution solution) {
+    protected PatchSolution(PatchSolution solution) {
         super(0, solution.getNumberOfObjectives(), solution.getNumberOfConstraints());
         patch = solution.getPatch().clone();
+        for (int i = 0; i < solution.getNumberOfObjectives(); i++) {
+            this.setObjective(i, solution.getObjective(i));
+        }
+        for (int i = 0; i < solution.getNumberOfConstraints(); i++) {
+            this.setConstraint(i, solution.getConstraint(i));
+        }
+        this.attributes = new HashMap<>(solution.attributes);
     }
 
     /**
@@ -55,7 +62,7 @@ public class PatchSolution extends AbstractSolution<Edit> {
     }
 
     @Override
-    public Solution<Edit> copy() {
+    public PatchSolution copy() {
         return new PatchSolution(this);
     }
 
