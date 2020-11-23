@@ -191,7 +191,7 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
     protected void createOutputDir() throws IOException {
         Validate.notNull(outputDir);
         try {
-            Files.createDirectories(outputDir.toPath(), null);
+            Files.createDirectories(outputDir.toPath());
         } catch (IOException ex) {
             Logger.error(ex, "Error creating output directory for the results: " + outputDir.getAbsolutePath());
             throw ex;
@@ -222,28 +222,22 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
 
     protected void printVariablesToFile() throws IOException {
         if (solutionList != null && !solutionList.isEmpty()) {
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(FileUtils.getFile(outputDir, varFileName));
+            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, varFileName))) {
                 for (Solution<?> solution : solutionList) {
                     printLine(solution.getVariables(), writer);
                 }
-            } finally {
-                this.closeWriter(writer);
             }
         }
     }
 
     protected void printObjectivesToFile() throws IOException, TonicException {
         if (solutionList != null && !solutionList.isEmpty()) {
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(FileUtils.getFile(outputDir, funFileName));
+            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, funFileName))) {
                 int numberOfObjectives = solutionList.get(0).getNumberOfObjectives();
                 if (isObjectiveToBeMinimized != null && isObjectiveToBeMinimized.size() != numberOfObjectives) {
                     throw new TonicException("The size of list minimizeObjective is not correct: " + isObjectiveToBeMinimized.size());
                 }
-                if (objectiveNames != null && !objectiveNames.isEmpty()) {
+                if (objectiveNames != null) {
                     if (objectiveNames.size() != numberOfObjectives) {
                         throw new TonicException("The size of list objectiveNames is not correct: " + objectiveNames.size());
                     }
@@ -260,37 +254,20 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
                     }
                     this.printLine(objectives, writer);
                 }
-            } finally {
-                this.closeWriter(writer);
             }
         }
     }
 
     protected void printTimesTofile() throws IOException, TonicException {
         if (times != null && !times.isEmpty()) {
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(FileUtils.getFile(outputDir, timeFileName));
-                if (timeNames != null && !timeNames.isEmpty()) {
+            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, timeFileName))) {
+                if (timeNames != null) {
                     if (timeNames.size() != times.size()) {
                         throw new TonicException("The size of list timeNames is not correct: " + timeNames.size());
                     }
                     this.printHeader(timeNames, writer);
                 }
                 printLine(times, writer);
-            } finally {
-                this.closeWriter(writer);
-            }
-        }
-    }
-
-    protected void closeWriter(FileWriter writer) throws IOException {
-        if (writer != null) {
-            try {
-                writer.close();
-            } catch (IOException ex) {
-                Logger.error(ex, "Error closing file stream.");
-                throw ex;
             }
         }
     }

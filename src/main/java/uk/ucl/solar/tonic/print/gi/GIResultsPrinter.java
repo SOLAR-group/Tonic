@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.pmw.tinylog.Logger;
 import uk.ucl.solar.tonic.exception.TonicException;
 import uk.ucl.solar.tonic.print.DefaultResultsPrinter;
 import uk.ucl.solar.tonic.solution.PatchSolution;
@@ -41,7 +40,7 @@ public class GIResultsPrinter extends DefaultResultsPrinter<PatchSolution> {
     public GIResultsPrinter(List<String> patchColumnsNames) {
         this.patchColumnsNames = patchColumnsNames;
     }
-    
+
     public GIResultsPrinter(File outputDir, List<String> patchColumnsNames) {
         super(outputDir);
         this.patchColumnsNames = patchColumnsNames;
@@ -97,18 +96,14 @@ public class GIResultsPrinter extends DefaultResultsPrinter<PatchSolution> {
     private void printPatchesToFile() throws TonicException, IOException {
         if (solutionList != null && !solutionList.isEmpty()
                 && patchColumnsNames != null && !patchColumnsNames.isEmpty()) {
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(FileUtils.getFile(outputDir, patchFileName));
+            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, patchFileName))) {
                 this.printHeader(patchColumnsNames, writer);
                 for (PatchSolution solution : solutionList) {
                     List<?> attributes = patchColumnsNames.stream()
-                            .map(column -> solution.getAttribute(column))
+                            .map(column -> solution.getAttributes().getOrDefault(column, ""))
                             .collect(Collectors.toList());
                     this.printLine(attributes, writer);
                 }
-            } finally {
-                this.closeWriter(writer);
             }
         }
     }
