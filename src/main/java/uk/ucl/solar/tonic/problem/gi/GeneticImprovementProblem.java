@@ -94,7 +94,7 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
      */
     protected List<Class<? extends Edit>> editTypes;
 
-    public GeneticImprovementProblem(Properties ginProperties) {
+    public GeneticImprovementProblem(String ginPropertiesPath) {
         //TODO get properties from file
         setUp();
     }
