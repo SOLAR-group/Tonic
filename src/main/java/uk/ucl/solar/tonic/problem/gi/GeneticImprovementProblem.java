@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ucl.solar.tonic.problem;
+package uk.ucl.solar.tonic.problem.gi;
 
 import com.opencsv.CSVReaderHeaderAware;
 import gin.Patch;
 import gin.SourceFile;
+import gin.edit.Edit;
 import gin.test.ExternalTestRunner;
 import gin.test.InternalTestRunner;
 import gin.test.UnitTest;
@@ -32,6 +33,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +43,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.pmw.tinylog.Logger;
 import org.uma.jmetal.problem.AbstractGenericProblem;
 import uk.ucl.solar.tonic.base.TargetMethod;
@@ -76,16 +81,22 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
 
     /*============== Structures holding all project data  ==============*/
     protected List<TargetMethod> methodData = new ArrayList<>();
+    protected Iterator<TargetMethod> methodIterator;
+    protected TargetMethod targetedMethod;
+    protected SourceFile targetedSourceFile;
+
+    protected Map<SourceFile, UnitTestResultSet> originalProgramResults;
+
     protected Set<UnitTest> testData = new LinkedHashSet<>();
+
+    /**
+     * allowed edit types for sampling: parsed from editType
+     */
+    protected List<Class<? extends Edit>> editTypes;
 
     public GeneticImprovementProblem(Properties ginProperties) {
         //TODO get properties from file
         setUp();
-    }
-
-    @Override
-    public PatchSolution createSolution() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     protected void setUp() {
@@ -104,10 +115,46 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
             Logger.info("Classpath: " + this.classPath);
         }
         this.methodData = processMethodFile();
-        if (methodData.isEmpty()) {
-            Logger.info("No methods to process.");
+        this.methodIterator = this.methodData.iterator();
+        if (!this.methodIterator.hasNext()) {
+            Logger.error("No methods to process.");
             System.exit(0);
         }
+        this.originalProgramResults = new HashMap<>();
+    }
+
+    public UnitTestResultSet runPatch(Patch patch) {
+        if (this.targetedMethod != null && this.targetedSourceFile != null) {
+            String className = this.targetedMethod.getClassName();
+            List<UnitTest> tests = this.targetedMethod.getGinTests();
+            UnitTestResultSet results = testPatch(className, tests, patch);
+            if (patch.size() == 0) {
+                this.originalProgramResults.computeIfAbsent(this.targetedSourceFile, sourceFile -> results);
+            }
+            return results;
+        } else {
+            return null;
+        }
+    }
+
+    public TargetMethod nextMethod() {
+        if (this.methodIterator.hasNext()) {
+            this.targetedMethod = this.methodIterator.next();
+            this.targetedSourceFile = SourceFile.makeSourceFileForEditTypes(
+                    editTypes,
+                    this.targetedMethod.getFileSource().getPath(),
+                    Collections.singletonList(this.targetedMethod.getMethodName()));
+        } else {
+            this.targetedMethod = null;
+            this.targetedSourceFile = null;
+        }
+        return this.targetedMethod;
+    }
+
+    @Override
+    public PatchSolution createSolution() {
+        Validate.notNull(this.targetedMethod, "There is no target method. Either the method file is empty, or you forgot to call \"problem.nextMethod()\".");
+        return new PatchSolution(this.getNumberOfObjectives(), this.getNumberOfConstraints(), this.targetedSourceFile);
     }
 
     /*============== methods for running tests  ==============*/
