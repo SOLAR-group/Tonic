@@ -34,7 +34,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -42,6 +41,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.pmw.tinylog.Logger;
@@ -73,33 +73,115 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
     protected Boolean eachRepetitionInNewSubprocess = false;
     protected Boolean eachTestInNewSubprocess = false;
     protected Boolean failFast = false;
+    protected String editType = Edit.EditType.STATEMENT.toString();
 
     /*============== Other  ==============*/
     protected Project project = null;
     private static final String TEST_SEPARATOR = ",";
     private static final String METHOD_SEPARATOR = ".";
+    protected Set<UnitTest> testData = new LinkedHashSet<>();
 
     /*============== Structures holding all project data  ==============*/
     protected List<TargetMethod> methodData = new ArrayList<>();
     protected Iterator<TargetMethod> methodIterator;
     protected TargetMethod targetedMethod;
     protected SourceFile targetedSourceFile;
-
-    protected Map<SourceFile, UnitTestResultSet> originalProgramResults;
-
-    protected Set<UnitTest> testData = new LinkedHashSet<>();
+    protected UnitTestResultSet originalProgramResults;
 
     /**
      * allowed edit types for sampling: parsed from editType
      */
     protected List<Class<? extends Edit>> editTypes;
 
-    public GeneticImprovementProblem(String ginPropertiesPath) {
+    public GeneticImprovementProblem(String ginPropertiesPath) throws IOException {
         //TODO get properties from file
+        File propertiesFile = FileUtils.getFile(ginPropertiesPath);
+        Validate.isTrue(propertiesFile.exists(), "I could not find Gin's properties file.");
+        loadAndValidateProperties(propertiesFile);
         setUp();
     }
 
-    protected void setUp() {
+    // Coupled by Time.. is there a way of dettaching load and validate?
+    protected final void loadAndValidateProperties(File propertiesFile) throws IOException {
+        Properties properties = new Properties();
+        try ( FileReader reader = new FileReader(propertiesFile)) {
+            properties.load(reader);
+            String property;
+
+            property = properties.getProperty("projectDirectory");
+            Validate.notBlank(property, "The property 'projectDirectory' cannot be null or empty.");
+            this.projectDirectory = FileUtils.getFile(property);
+            Validate.isTrue(this.projectDirectory.exists(), "I could not find the Project's directory.");
+
+            property = properties.getProperty("methodFile");
+            Validate.notBlank(property, "The property 'methodFile' cannot be null or empty.");
+            this.methodFile = FileUtils.getFile(property);
+            Validate.isTrue(this.methodFile.exists(), "I could not find the Method File.");
+
+            property = properties.getProperty("projectName");
+            this.projectName = property;
+
+            property = properties.getProperty("classPath");
+            this.classPath = property;
+
+            if (properties.containsKey("mavenHome")) {
+                this.mavenHome = FileUtils.getFile(properties.getProperty("mavenHome"));
+                Validate.isTrue(this.mavenHome.exists(), "I could not find the Maven Home.");
+            }
+
+            if (properties.containsKey("outputFile")) {
+                this.outputFile = FileUtils.getFile(properties.getProperty("outputFile"));
+            }
+
+            if (properties.containsKey("timingOutputFile")) {
+                this.timingOutputFile = FileUtils.getFile(properties.getProperty("timingOutputFile"));
+            }
+
+            if (properties.containsKey("timeoutMS")) {
+                property = properties.getProperty("timeoutMS");
+                this.timeoutMS = Long.valueOf(property);
+                Validate.inclusiveBetween(1L, Long.MAX_VALUE, this.timeoutMS.longValue());
+            }
+
+            if (properties.containsKey("reps")) {
+                property = properties.getProperty("reps");
+                this.reps = Integer.valueOf(property);
+                Validate.inclusiveBetween(1, Long.MAX_VALUE, this.reps);
+            }
+
+            if (properties.containsKey("inSubprocess")) {
+                property = properties.getProperty("inSubprocess");
+                this.inSubprocess = Boolean.valueOf(property);
+            }
+
+            if (properties.containsKey("eachRepetitionInNewSubprocess")) {
+                property = properties.getProperty("eachRepetitionInNewSubprocess");
+                this.eachRepetitionInNewSubprocess = Boolean.valueOf(property);
+            }
+
+            if (properties.containsKey("eachTestInNewSubprocess")) {
+                property = properties.getProperty("eachTestInNewSubprocess");
+                this.eachTestInNewSubprocess = Boolean.valueOf(property);
+            }
+
+            if (properties.containsKey("failFast")) {
+                property = properties.getProperty("failFast");
+                this.failFast = Boolean.valueOf(property);
+            }
+
+            if (properties.containsKey("editType")) {
+                property = properties.getProperty("editType");
+                this.editType = property;
+                Validate.notBlank(this.editType, "Edit type cannot be null or blank.");
+                Validate.isTrue(Edit.EditType.valueOf(this.editType) != null, "Invalid edit type. Available types are: LINE, STATEMENT, MATCHED_STATEMENT, MODIFY_STATEMENT.");
+            }
+        } catch (IOException ex) {
+            Logger.error(ex, "Could not load properties file.");
+            throw ex;
+        }
+    }
+
+    protected final void setUp() {
         if (this.classPath == null) {
             this.project = new Project(projectDirectory, projectName);
             if (mavenHome != null) {
@@ -120,16 +202,21 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
             Logger.error("No methods to process.");
             System.exit(0);
         }
-        this.originalProgramResults = new HashMap<>();
+        this.editTypes = Edit.parseEditClassesFromString(this.editType);
     }
 
     public UnitTestResultSet runPatch(Patch patch) {
+        // If there is a method to improve
         if (this.targetedMethod != null && this.targetedSourceFile != null) {
             String className = this.targetedMethod.getClassName();
             List<UnitTest> tests = this.targetedMethod.getGinTests();
+            // Test the patch
             UnitTestResultSet results = testPatch(className, tests, patch);
-            if (patch.size() == 0) {
-                this.originalProgramResults.computeIfAbsent(this.targetedSourceFile, sourceFile -> results);
+            // If the patch is empty (i.e. the original program) and it is the
+            // first time it is being executed
+            if (patch.size() == 0 && this.originalProgramResults == null) {
+                // Save the original program execution's information
+                this.originalProgramResults = results;
             }
             return results;
         } else {
