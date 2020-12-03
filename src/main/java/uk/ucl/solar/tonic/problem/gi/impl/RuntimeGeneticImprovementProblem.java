@@ -17,6 +17,7 @@ package uk.ucl.solar.tonic.problem.gi.impl;
 
 import gin.test.UnitTestResultSet;
 import java.io.IOException;
+import java.util.Properties;
 import uk.ucl.solar.tonic.problem.gi.GeneticImprovementProblem;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
@@ -28,6 +29,14 @@ public class RuntimeGeneticImprovementProblem extends GeneticImprovementProblem 
 
     public RuntimeGeneticImprovementProblem(String ginPropertiesPath) throws IOException {
         super(ginPropertiesPath);
+        this.setNumberOfObjectives(2);
+        this.setNumberOfConstraints(1);
+        this.setNumberOfVariables(-1);
+        this.setName("Runtime Genetic Improvement Problem");
+    }
+
+    public RuntimeGeneticImprovementProblem(Properties ginProperties) throws IOException {
+        super(ginProperties);
         this.setNumberOfObjectives(2);
         this.setNumberOfConstraints(1);
         this.setNumberOfVariables(-1);
