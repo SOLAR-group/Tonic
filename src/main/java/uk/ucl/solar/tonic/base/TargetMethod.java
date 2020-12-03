@@ -18,6 +18,7 @@ package uk.ucl.solar.tonic.base;
 import gin.test.UnitTest;
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -67,12 +68,28 @@ public class TargetMethod {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return ((obj instanceof TargetMethod) && methodID.equals(((TargetMethod) obj).methodID));
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.methodID);
+        return hash;
     }
 
     @Override
-    public int hashCode() {
-        return methodID.hashCode();
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TargetMethod other = (TargetMethod) obj;
+        if (!Objects.equals(this.methodID, other.methodID)) {
+            return false;
+        }
+        return true;
     }
+
 }

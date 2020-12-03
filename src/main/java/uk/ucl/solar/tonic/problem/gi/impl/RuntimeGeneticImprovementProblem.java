@@ -63,6 +63,7 @@ public class RuntimeGeneticImprovementProblem extends GeneticImprovementProblem 
         solution.setObjective(1, fitness);
         solution.setConstraint(0, constraint);
 
+        this.fillSolutionAttributes(solution, results);
         return solution;
     }
 

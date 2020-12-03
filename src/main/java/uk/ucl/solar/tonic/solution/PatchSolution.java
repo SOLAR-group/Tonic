@@ -20,6 +20,7 @@ import gin.SourceFile;
 import gin.edit.Edit;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import org.uma.jmetal.solution.AbstractSolution;
 
 /**
@@ -88,6 +89,54 @@ public class PatchSolution extends AbstractSolution<Edit> {
 
     public Patch getPatch() {
         return patch;
+    }
+
+    public SourceFile getSourceFile() {
+        return patch.getSourceFile();
+    }
+
+    public void add(Edit edit) {
+        patch.add(edit);
+    }
+
+    public String apply() {
+        return patch.apply();
+    }
+
+    public void addRandomEditOfClass(Random rng, Class<? extends Edit> allowableEditType) {
+        patch.addRandomEditOfClass(rng, allowableEditType);
+    }
+
+    public void addRandomEditOfClasses(Random rng, List<Class<? extends Edit>> allowableEditTypes) {
+        patch.addRandomEditOfClasses(rng, allowableEditTypes);
+    }
+
+    public void addRandomEdit(Random rng, Edit.EditType allowableEditType) {
+        patch.addRandomEdit(rng, allowableEditType);
+    }
+
+    public void addRandomEdit(Random rng, List<Edit.EditType> allowableEditTypes) {
+        patch.addRandomEdit(rng, allowableEditTypes);
+    }
+
+    public void writePatchedSourceToFile(String filename) {
+        patch.writePatchedSourceToFile(filename);
+    }
+
+    public boolean isOnlyLineEdits() {
+        return patch.isOnlyLineEdits();
+    }
+
+    public boolean isOnlyStatementEdits() {
+        return patch.isOnlyStatementEdits();
+    }
+
+    public boolean lastApplyWasValid() {
+        return patch.lastApplyWasValid();
+    }
+
+    public List<Boolean> getEditsInvalidOnLastApply() {
+        return patch.getEditsInvalidOnLastApply();
     }
 
 }

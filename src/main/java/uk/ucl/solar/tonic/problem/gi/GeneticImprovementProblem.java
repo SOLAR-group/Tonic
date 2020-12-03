@@ -38,6 +38,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +71,8 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
     protected Boolean eachTestInNewSubprocess = false;
     protected Boolean failFast = false;
     protected String editType = Edit.EditType.STATEMENT.toString();
+    protected Random random = new Random();
+    protected Long seed;
 
     /*============== Other  ==============*/
     protected Project project = null;
@@ -82,6 +85,7 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
     protected Iterator<TargetMethod> methodIterator;
     protected TargetMethod targetedMethod;
     protected SourceFile targetedSourceFile;
+    protected PatchSolution originalPatchSolution;
     protected UnitTestResultSet originalProgramResults;
     /**
      * allowed edit types for sampling: parsed from editType
@@ -268,12 +272,33 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
         return editTypes;
     }
 
+    public PatchSolution getOriginalPatchSolution() {
+        return originalPatchSolution;
+    }
+
+    public Long getSeed() {
+        return seed;
+    }
+
+    public void setSeed(Long seed) {
+        this.seed = seed;
+        if (this.random == null) {
+            this.random = new Random(seed);
+        } else {
+            this.random.setSeed(seed);
+        }
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
     // Coupled by Time.. is there a way of dettaching load and validate?
     protected final void loadProperties(File propertiesFile) throws IOException {
         Validate.notNull(propertiesFile, "Properties file cannot be null.");
         Validate.isTrue(propertiesFile.exists(), "I could not find Gin's properties file.");
         Properties properties = new Properties();
-        try ( FileReader reader = new FileReader(propertiesFile)) {
+        try (FileReader reader = new FileReader(propertiesFile)) {
             properties.load(reader);
         } catch (IOException ex) {
             Logger.error(ex, "Could not load properties file.");
@@ -338,6 +363,12 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
             property = properties.getProperty("editType");
             this.setEditType(property);
         }
+
+        if (properties.containsKey("seed")) {
+            property = properties.getProperty("seed");
+            long seed = Long.valueOf(property);
+            this.setSeed(seed);
+        }
     }
 
     protected final void setUp() {
@@ -398,7 +429,15 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
     @Override
     public PatchSolution createSolution() {
         Validate.notNull(this.targetedMethod, "There is no target method. Either the method file is empty, or you forgot to call \"problem.nextMethod()\".");
-        return new PatchSolution(this.getNumberOfObjectives(), this.getNumberOfConstraints(), this.getTargetedSourceFile());
+        PatchSolution patchSolution = new PatchSolution(this.getNumberOfObjectives(), this.getNumberOfConstraints(), this.getTargetedSourceFile());
+        // Always creates an empty patch first
+        if (this.originalPatchSolution == null) {
+            this.originalPatchSolution = patchSolution;
+            // Otherwise, creates a solution with a random edit
+        } else {
+            patchSolution.addRandomEditOfClasses(this.random, this.editTypes);
+        }
+        return patchSolution;
     }
 
     protected UnitTestResultSet testPatch(String targetClass, List<UnitTest> tests, Patch patch) {
@@ -432,7 +471,7 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
 
     // only Tests and Method fields are required, be careful thus if supplying files with multiple projects, this is not yet handled
     private List<TargetMethod> processMethodFile() {
-        try ( FileReader fileReader = new FileReader(this.methodFile)) {
+        try (FileReader fileReader = new FileReader(this.methodFile)) {
             CSVReaderHeaderAware reader = new CSVReaderHeaderAware(fileReader);
             Map<String, String> data = reader.readMap();
             if ((!data.containsKey("Method")) || (!data.containsKey("Tests"))) {
@@ -514,7 +553,28 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
             return null;
         }
         return files[0];
+    }
 
+    protected void fillSolutionAttributes(PatchSolution solution, UnitTestResultSet results) {
+        long nTests = results.getResults().size();
+        long nPassed = results.getResults().stream()
+                .filter(test -> test.getPassed())
+                .count();
+        long nFailed = nTests - nPassed;
+
+        solution.setAttribute("MethodIndex", this.getTargetedMethod().getMethodID());
+        solution.setAttribute("MethodName", this.getTargetedMethod().getMethodName());
+        solution.setAttribute("PatchSize", solution.getObjective(0));
+        solution.setAttribute("Patch", solution.getPatch().toString());
+        solution.setAttribute("Compiled", results.getCleanCompile());
+        solution.setAttribute("NTests", nTests);
+        solution.setAttribute("AllTestsPassed", results.allTestsSuccessful());
+        solution.setAttribute("NPassed", nPassed);
+        solution.setAttribute("NFailed", nFailed);
+        solution.setAttribute("TotalExecutionTime(ms)", results.totalExecutionTime() / 1000000.0f);
+        solution.setAttribute("Fitness", solution.getObjective(1));
+        solution.setAttribute("FitnessImprovement", this.originalPatchSolution.getObjective(1) - solution.getObjective(1));
+        solution.setAttribute("TimeStamp", System.currentTimeMillis());
     }
 
 }
