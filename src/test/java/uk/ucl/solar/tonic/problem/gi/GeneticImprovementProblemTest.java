@@ -16,9 +16,11 @@
 package uk.ucl.solar.tonic.problem.gi;
 
 import gin.edit.Edit;
+import gin.test.UnitTestResultSet;
 import gin.util.MavenUtils;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -34,7 +36,7 @@ import uk.ucl.solar.tonic.solution.PatchSolution;
  */
 public class GeneticImprovementProblemTest {
 
-    private String propertiesFile = "./src/test/resources/maven-simple/tonic.properties";
+    private String propertiesFile = "./unittests/maven-simple/tonic.properties";
     private Properties propertiesObject;
 
     @Before
@@ -77,9 +79,12 @@ public class GeneticImprovementProblemTest {
         assertNull(problem.getOriginalProgramResults());
         assertNull(problem.getTargetedMethod());
         assertNull(problem.getTargetedSourceFile());
+        problem.setOriginalProgramResults(new UnitTestResultSet(null, true, new ArrayList<>(), true, true, null));
         problem.nextMethod();
         assertNotNull(problem.getTargetedMethod());
         assertNotNull(problem.getTargetedSourceFile());
+        assertNull(problem.getOriginalPatchSolution());
+        assertNull(problem.getOriginalProgramResults());
         problem.nextMethod();
         assertNotNull(problem.getTargetedMethod());
         assertNotNull(problem.getTargetedSourceFile());
@@ -101,17 +106,17 @@ public class GeneticImprovementProblemTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPropertiesFileDoesNotExist() throws IOException {
-        RuntimeGeneticImprovementProblem problem = new RuntimeGeneticImprovementProblem("./src/test/thisFileDoesNotExist.properties");
+        RuntimeGeneticImprovementProblem problem = new RuntimeGeneticImprovementProblem("./unittests/thisFileDoesNotExist.properties");
     }
 
     @Test(expected = IOException.class)
     public void testPropertiesFileIsDir() throws IOException {
-        RuntimeGeneticImprovementProblem problem = new RuntimeGeneticImprovementProblem("./src/test");
+        RuntimeGeneticImprovementProblem problem = new RuntimeGeneticImprovementProblem("./unittests");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testProjectDirectoryDoesNotExist() throws IOException {
-        this.propertiesObject.setProperty("projectDirectory", "./src/test/thisDirDoesNotExist");
+        this.propertiesObject.setProperty("projectDirectory", "./unittests/thisDirDoesNotExist");
         RuntimeGeneticImprovementProblem problem = new RuntimeGeneticImprovementProblem(propertiesObject);
     }
 
@@ -123,7 +128,7 @@ public class GeneticImprovementProblemTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testMethodFileDoesNotExist() throws IOException {
-        this.propertiesObject.setProperty("methodFile", "./src/test/thisFileDoesNotExist.csv");
+        this.propertiesObject.setProperty("methodFile", "./unittests/thisFileDoesNotExist.csv");
         RuntimeGeneticImprovementProblem problem = new RuntimeGeneticImprovementProblem(propertiesObject);
     }
 
@@ -167,12 +172,12 @@ public class GeneticImprovementProblemTest {
     public void createSolution() throws IOException {
         RuntimeGeneticImprovementProblem problem = new RuntimeGeneticImprovementProblem(propertiesObject);
         problem.nextMethod();
-        
+
         PatchSolution solution = problem.createSolution();
         assertNotNull(solution);
         assertNotNull(problem.getOriginalPatchSolution());
         assertEquals(solution, problem.getOriginalPatchSolution());
-        
+
         solution = problem.createSolution();
         assertNotNull(solution);
         assertNotEquals(solution, problem.getOriginalPatchSolution());

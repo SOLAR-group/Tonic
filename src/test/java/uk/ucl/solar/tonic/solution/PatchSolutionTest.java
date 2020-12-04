@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
  */
 public class PatchSolutionTest {
 
-    private final static String verySmallExampleSourceFilename = "src/test/resources/Small.java";
+    private final static String verySmallExampleSourceFilename = "./unittests/Small.java";
     private final static List<Edit.EditType> allowableEditTypesTree = Arrays.asList(Edit.EditType.STATEMENT, Edit.EditType.MODIFY_STATEMENT);
 
     private SourceFileTree sourceFileTree;

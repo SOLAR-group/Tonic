@@ -38,7 +38,7 @@ import uk.ucl.solar.tonic.exception.TonicException;
  */
 public class DefaultResultsPrinterTest {
 
-    private final File outputDir = FileUtils.getFile("./src/test/resources/tempdir");
+    private final File outputDir = FileUtils.getFile("./unittests/tempdir");
     private DefaultResultsPrinter printer;
     private List<Solution> solutions;
 

@@ -423,6 +423,8 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
             this.targetedMethod = null;
             this.targetedSourceFile = null;
         }
+        this.originalPatchSolution = null;
+        this.originalProgramResults = null;
         return this.targetedMethod;
     }
 
@@ -556,25 +558,28 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
     }
 
     protected void fillSolutionAttributes(PatchSolution solution, UnitTestResultSet results) {
-        long nTests = results.getResults().size();
-        long nPassed = results.getResults().stream()
+        int nTests = results.getResults().size();
+        int nPassed = (int) results.getResults().stream()
                 .filter(test -> test.getPassed())
                 .count();
-        long nFailed = nTests - nPassed;
+        int nFailed = nTests - nPassed;
 
         solution.setAttribute("MethodIndex", this.getTargetedMethod().getMethodID());
         solution.setAttribute("MethodName", this.getTargetedMethod().getMethodName());
-        solution.setAttribute("PatchSize", solution.getObjective(0));
+        solution.setAttribute("PatchSize", solution.getNumberOfVariables());
         solution.setAttribute("Patch", solution.getPatch().toString());
         solution.setAttribute("Compiled", results.getCleanCompile());
         solution.setAttribute("NTests", nTests);
         solution.setAttribute("AllTestsPassed", results.allTestsSuccessful());
         solution.setAttribute("NPassed", nPassed);
         solution.setAttribute("NFailed", nFailed);
-        solution.setAttribute("TotalExecutionTime(ms)", results.totalExecutionTime() / 1000000.0f);
-        solution.setAttribute("Fitness", solution.getObjective(1));
-        solution.setAttribute("FitnessImprovement", this.originalPatchSolution.getObjective(1) - solution.getObjective(1));
+        solution.setAttribute("TotalExecutionTime(ms)", (double) results.totalExecutionTime() / 1000000);
         solution.setAttribute("TimeStamp", System.currentTimeMillis());
+
+        for (int i = 0; i < this.getNumberOfObjectives(); i++) {
+            solution.setAttribute("Fitness_" + i, solution.getObjective(i));
+            solution.setAttribute("FitnessImprovement_" + i, this.originalPatchSolution.getObjective(i) - solution.getObjective(i));
+        }
     }
 
 }

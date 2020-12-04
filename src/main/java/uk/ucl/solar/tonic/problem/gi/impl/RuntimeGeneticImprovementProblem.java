@@ -30,7 +30,6 @@ public class RuntimeGeneticImprovementProblem extends GeneticImprovementProblem 
     public RuntimeGeneticImprovementProblem(String ginPropertiesPath) throws IOException {
         super(ginPropertiesPath);
         this.setNumberOfObjectives(2);
-        this.setNumberOfConstraints(1);
         this.setNumberOfVariables(-1);
         this.setName("Runtime Genetic Improvement Problem");
     }
@@ -38,7 +37,6 @@ public class RuntimeGeneticImprovementProblem extends GeneticImprovementProblem 
     public RuntimeGeneticImprovementProblem(Properties ginProperties) throws IOException {
         super(ginProperties);
         this.setNumberOfObjectives(2);
-        this.setNumberOfConstraints(1);
         this.setNumberOfVariables(-1);
         this.setName("Runtime Genetic Improvement Problem");
     }
@@ -49,19 +47,10 @@ public class RuntimeGeneticImprovementProblem extends GeneticImprovementProblem 
 
         UnitTestResultSet results = runPatch(solution.getPatch());
         double fitness = Double.MAX_VALUE;
-        double constraint = Double.MAX_VALUE;
         if (results.getCleanCompile() && results.allTestsSuccessful()) {
             fitness = (results.totalExecutionTime() / 1000000D);
-            constraint = 0;
-        } else {
-            solution.setConstraint(0, !results.getCleanCompile()
-                    ? results.getResults().size()
-                    : results.getResults().stream()
-                            .filter(result -> !result.getPassed())
-                            .count());
         }
         solution.setObjective(1, fitness);
-        solution.setConstraint(0, constraint);
 
         this.fillSolutionAttributes(solution, results);
         return solution;

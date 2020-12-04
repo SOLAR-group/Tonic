@@ -18,7 +18,7 @@ public class App
 
     public static int classifyTriangle(int a, int b, int c) {
 
-        delay();
+//        delay();
 
         // Sort the sides so that a <= b <= c
         if (a > b) {

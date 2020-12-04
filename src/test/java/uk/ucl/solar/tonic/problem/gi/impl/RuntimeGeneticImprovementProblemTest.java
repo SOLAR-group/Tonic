@@ -29,7 +29,7 @@ import uk.ucl.solar.tonic.solution.PatchSolution;
  */
 public class RuntimeGeneticImprovementProblemTest {
 
-    private String propertiesFile = "./src/test/resources/maven-simple/tonic.properties";
+    private String propertiesFile = "./unittests/maven-simple/tonic.properties";
     private Properties propertiesObject;
 
     @Before
@@ -49,8 +49,47 @@ public class RuntimeGeneticImprovementProblemTest {
         assertNotNull(solution);
         assertNotNull(problem.getOriginalPatchSolution());
         assertEquals(solution, problem.getOriginalPatchSolution());
-
         problem.evaluate(solution);
+
+        assertEquals(1, solution.getAttribute("MethodIndex"));
+        assertEquals("com.mycompany.app.App.classifyTriangle(int,int,int)", solution.getAttribute("MethodName"));
+        assertEquals(0, solution.getAttribute("PatchSize"));
+        assertEquals("|", solution.getAttribute("Patch"));
+        assertEquals(true, solution.getAttribute("Compiled"));
+        assertEquals(4, solution.getAttribute("NTests"));
+        assertEquals(true, solution.getAttribute("AllTestsPassed"));
+        assertEquals(4, solution.getAttribute("NPassed"));
+        assertEquals(0, solution.getAttribute("NFailed"));
+        assertTrue((double) solution.getAttribute("TotalExecutionTime(ms)") > 0);
+        assertTrue((long) solution.getAttribute("TimeStamp") > 0);
+
+        assertEquals(0.0, solution.getAttribute("Fitness_0"));
+        assertEquals(0.0, solution.getAttribute("FitnessImprovement_0"));
+        assertEquals(solution.getAttribute("TotalExecutionTime(ms)"), solution.getAttribute("Fitness_1"));
+        assertEquals(0.0, solution.getAttribute("FitnessImprovement_1"));
+
+        solution = problem.createSolution();
+        assertNotNull(solution);
+        assertNotNull(problem.getOriginalPatchSolution());
+        assertNotEquals(solution, problem.getOriginalPatchSolution());
+        problem.evaluate(solution);
+
+        assertEquals(1, solution.getAttribute("MethodIndex"));
+        assertEquals("com.mycompany.app.App.classifyTriangle(int,int,int)", solution.getAttribute("MethodName"));
+        assertEquals(1, solution.getAttribute("PatchSize"));
+        assertTrue(((String) solution.getAttribute("Patch")).startsWith("| gin.edit.statement.ReplaceStatement"));
+        assertEquals(false, solution.getAttribute("Compiled"));
+        assertEquals(4, solution.getAttribute("NTests"));
+        assertEquals(false, solution.getAttribute("AllTestsPassed"));
+        assertEquals(0, solution.getAttribute("NPassed"));
+        assertEquals(4, solution.getAttribute("NFailed"));
+        assertTrue((double) solution.getAttribute("TotalExecutionTime(ms)") == 0);
+        assertTrue((long) solution.getAttribute("TimeStamp") > 0);
+
+        assertEquals(1.0, solution.getAttribute("Fitness_0"));
+        assertEquals(-1.0, solution.getAttribute("FitnessImprovement_0"));
+        assertEquals(Double.MAX_VALUE, solution.getAttribute("Fitness_1"));
+        assertTrue((double) solution.getAttribute("FitnessImprovement_1") == Double.MAX_VALUE * -1);
     }
 
 }

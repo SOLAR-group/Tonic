@@ -32,8 +32,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.uma.jmetal.solution.Solution;
-import uk.ucl.solar.tonic.print.DefaultResultsPrinter;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
 /**
@@ -42,11 +40,11 @@ import uk.ucl.solar.tonic.solution.PatchSolution;
  */
 public class DefaultGIResultsPrinterTest {
 
-    private final File outputDir = FileUtils.getFile("./src/test/resources/tempdir");
+    private final File outputDir = FileUtils.getFile("./unittests/tempdir");
     private DefaultGIResultsPrinter printer;
     private List<PatchSolution> solutions;
 
-    private final static String verySmallExampleSourceFilename = "src/test/resources/Small.java";
+    private final static String verySmallExampleSourceFilename = "unittests/Small.java";
     private final static List<Edit.EditType> allowableEditTypesTree = Arrays.asList(Edit.EditType.STATEMENT, Edit.EditType.MODIFY_STATEMENT);
 
     private SourceFileTree sourceFileTree;
@@ -112,16 +110,16 @@ public class DefaultGIResultsPrinterTest {
 
         try ( Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
             String line = reader.nextLine();
-            assertEquals("gin.edit.statement.SwapStatement src/test/resources/Small.java:28 <-> src/test/resources/Small.java:6,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:29 OR -> EQUALS,"
-                    + "gin.edit.statement.ReplaceStatement src/test/resources/Small.java:42 -> src/test/resources/Small.java:43,"
-                    + "gin.edit.statement.ReplaceStatement src/test/resources/Small.java:12 -> src/test/resources/Small.java:6",
+            assertEquals("gin.edit.statement.SwapStatement unittests/Small.java:28 <-> unittests/Small.java:6,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
+                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
+                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
                     line.replace("\\", "/"));
             line = reader.nextLine();
-            assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  src/test/resources/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
-                    + "gin.edit.statement.CopyStatement src/test/resources/Small.java:6 -> src/test/resources/Small.java:42:42,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:31 LESS -> GREATER_EQUALS,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:37 GREATER -> LESS",
+            assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  unittests/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
+                    + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
                     line.replace("\\", "/"));
         }
 
@@ -151,16 +149,16 @@ public class DefaultGIResultsPrinterTest {
 
         try ( Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
             String line = reader.nextLine();
-            assertEquals("gin.edit.statement.SwapStatement src/test/resources/Small.java:28 <-> src/test/resources/Small.java:6,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:29 OR -> EQUALS,"
-                    + "gin.edit.statement.ReplaceStatement src/test/resources/Small.java:42 -> src/test/resources/Small.java:43,"
-                    + "gin.edit.statement.ReplaceStatement src/test/resources/Small.java:12 -> src/test/resources/Small.java:6",
+            assertEquals("gin.edit.statement.SwapStatement unittests/Small.java:28 <-> unittests/Small.java:6,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
+                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
+                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
                     line.replace("\\", "/"));
             line = reader.nextLine();
-            assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  src/test/resources/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
-                    + "gin.edit.statement.CopyStatement src/test/resources/Small.java:6 -> src/test/resources/Small.java:42:42,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:31 LESS -> GREATER_EQUALS,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:37 GREATER -> LESS",
+            assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  unittests/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
+                    + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
                     line.replace("\\", "/"));
         }
 
@@ -190,16 +188,16 @@ public class DefaultGIResultsPrinterTest {
 
         try ( Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
             String line = reader.nextLine();
-            assertEquals("gin.edit.statement.SwapStatement src/test/resources/Small.java:28 <-> src/test/resources/Small.java:6,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:29 OR -> EQUALS,"
-                    + "gin.edit.statement.ReplaceStatement src/test/resources/Small.java:42 -> src/test/resources/Small.java:43,"
-                    + "gin.edit.statement.ReplaceStatement src/test/resources/Small.java:12 -> src/test/resources/Small.java:6",
+            assertEquals("gin.edit.statement.SwapStatement unittests/Small.java:28 <-> unittests/Small.java:6,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
+                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
+                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
                     line.replace("\\", "/"));
             line = reader.nextLine();
-            assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  src/test/resources/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
-                    + "gin.edit.statement.CopyStatement src/test/resources/Small.java:6 -> src/test/resources/Small.java:42:42,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:31 LESS -> GREATER_EQUALS,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  src/test/resources/Small.java:37 GREATER -> LESS",
+            assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  unittests/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
+                    + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
+                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
                     line.replace("\\", "/"));
         }
 
