@@ -28,9 +28,9 @@ import uk.ucl.solar.tonic.solution.PatchSolution;
  */
 public class UniformPatchCrossover implements CrossoverOperator<PatchSolution> {
 
-    private double crossoverProbability;
-    private Random random;
-    private Long seed;
+    protected double crossoverProbability;
+    protected Random random;
+    protected Long seed;
 
     public UniformPatchCrossover(double crossoverProbability, int seed) {
         this.crossoverProbability = crossoverProbability;
@@ -94,7 +94,7 @@ public class UniformPatchCrossover implements CrossoverOperator<PatchSolution> {
                             .get(0)
                             .setVariable(variableIndex, parent2.getVariable(variableIndex));
                     offspring
-                            .get(0)
+                            .get(1)
                             .setVariable(variableIndex, parent1.getVariable(variableIndex));
                 }
             }

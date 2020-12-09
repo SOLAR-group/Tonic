@@ -27,10 +27,10 @@ import uk.ucl.solar.tonic.solution.PatchSolution;
  */
 public class RandomPatchMutation implements MutationOperator<PatchSolution> {
 
-    private double mutationProbability;
-    private Random random;
-    private Long seed;
-    private List<Class<? extends Edit>> editTypes;
+    protected double mutationProbability;
+    protected Random random;
+    protected Long seed;
+    protected List<Class<? extends Edit>> editTypes;
 
     public RandomPatchMutation(double mutationProbability, List<Class<? extends Edit>> editTypes, int seed) {
         this.mutationProbability = mutationProbability;
