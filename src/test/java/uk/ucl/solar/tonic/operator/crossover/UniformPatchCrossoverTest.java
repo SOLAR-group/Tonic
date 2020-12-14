@@ -122,5 +122,46 @@ public class UniformPatchCrossoverTest {
         assertEquals(solution.getVariables().get(3), offspring.get(1).getVariables().get(3));
         
     }
+    
+    @Test
+    public void testSuccessfullDifferentSizes() {
+        Random random = new Random(1234);
+
+        PatchSolution solution = new PatchSolution(2, 1, sourceFileTree);
+        solution.getPatch().addRandomEdit(random, allowableEditTypesTree);
+        solution.getPatch().addRandomEdit(random, allowableEditTypesTree);
+
+        PatchSolution solution2 = new PatchSolution(2, 1, sourceFileTree);
+        solution2.getPatch().addRandomEdit(random, allowableEditTypesTree);
+        solution2.getPatch().addRandomEdit(random, allowableEditTypesTree);
+        solution2.getPatch().addRandomEdit(random, allowableEditTypesTree);
+        solution2.getPatch().addRandomEdit(random, allowableEditTypesTree);
+
+        List<PatchSolution> solutions = new ArrayList<>();
+        solutions.add(solution);
+        solutions.add(solution2);
+
+        UniformPatchCrossover operator = new UniformPatchCrossover(1.0);
+        operator.random = new Random(){
+            int count = 0;
+            @Override
+            public double nextDouble() {
+                return count++ % 2;
+            }
+        };
+        List<PatchSolution> offspring = operator.execute(solutions);
+
+        assertEquals(2, offspring.size());
+        assertEquals(2, offspring.get(0).getNumberOfVariables());
+        assertEquals(4, offspring.get(1).getNumberOfVariables());
+        
+        assertEquals(solution.getVariables().get(0), offspring.get(0).getVariables().get(0));
+        assertEquals(solution2.getVariables().get(1), offspring.get(0).getVariables().get(1));
+        
+        assertEquals(solution2.getVariables().get(0), offspring.get(1).getVariables().get(0));
+        assertEquals(solution.getVariables().get(1), offspring.get(1).getVariables().get(1));
+        assertEquals(solution2.getVariables().get(2), offspring.get(1).getVariables().get(2));
+        assertEquals(solution2.getVariables().get(3), offspring.get(1).getVariables().get(3));
+    }
 
 }
