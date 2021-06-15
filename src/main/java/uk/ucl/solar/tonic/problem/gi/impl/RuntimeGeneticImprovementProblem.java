@@ -16,13 +16,13 @@
 package uk.ucl.solar.tonic.problem.gi.impl;
 
 import gin.test.UnitTestResultSet;
-import java.io.IOException;
-import java.util.Properties;
 import uk.ucl.solar.tonic.problem.gi.GeneticImprovementProblem;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
- *
  * @author Giovani
  */
 public class RuntimeGeneticImprovementProblem extends GeneticImprovementProblem {

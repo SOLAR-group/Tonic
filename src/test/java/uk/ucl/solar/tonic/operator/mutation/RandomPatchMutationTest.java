@@ -17,17 +17,18 @@ package uk.ucl.solar.tonic.operator.mutation;
 
 import gin.SourceFileTree;
 import gin.edit.Edit;
+import org.junit.Before;
+import org.junit.Test;
+import uk.ucl.solar.tonic.solution.PatchSolution;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.junit.Before;
-import uk.ucl.solar.tonic.solution.PatchSolution;
 
 /**
- *
  * @author Giovani
  */
 public class RandomPatchMutationTest {
@@ -57,16 +58,16 @@ public class RandomPatchMutationTest {
         RandomPatchMutation operator = new RandomPatchMutation(1.0, Edit.getEditClassesOfTypes(allowableEditTypesTree));
         int numberOfVariablesBefore = solution.getNumberOfVariables();
         PatchSolution solution = operator.execute(this.solution);
-        
+
         assertEquals(numberOfVariablesBefore + 1, solution.getNumberOfVariables());
     }
-    
+
     @Test
     public void testNoPorbability() {
         RandomPatchMutation operator = new RandomPatchMutation(0.0, Edit.getEditClassesOfTypes(allowableEditTypesTree));
         int numberOfVariablesBefore = solution.getNumberOfVariables();
         PatchSolution solution = operator.execute(this.solution);
-        
+
         assertEquals(numberOfVariablesBefore, solution.getNumberOfVariables());
     }
 

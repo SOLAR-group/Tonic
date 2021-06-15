@@ -18,20 +18,21 @@ package uk.ucl.solar.tonic.problem.gi;
 import gin.edit.Edit;
 import gin.test.UnitTestResultSet;
 import gin.util.MavenUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
+import uk.ucl.solar.tonic.problem.gi.impl.RuntimeGeneticImprovementProblem;
+import uk.ucl.solar.tonic.solution.PatchSolution;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+
 import static org.junit.Assert.*;
-import org.junit.Assume;
-import org.junit.Before;
-import uk.ucl.solar.tonic.problem.gi.impl.RuntimeGeneticImprovementProblem;
-import uk.ucl.solar.tonic.solution.PatchSolution;
 
 /**
- *
  * @author Giovani
  */
 public class GeneticImprovementProblemTest {

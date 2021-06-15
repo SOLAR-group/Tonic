@@ -15,16 +15,17 @@
  */
 package uk.ucl.solar.tonic.problem.gi.impl;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
+import static org.junit.Assert.*;
+
 /**
- *
  * @author Giovani
  */
 public class RuntimeGeneticImprovementProblemTest {

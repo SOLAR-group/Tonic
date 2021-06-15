@@ -1,24 +1,21 @@
 package com.mycompany.app;
 
 /**
- * Hello world!
- * https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html
+ * Hello world! https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html
  */
-public class App
-{
-    public static void main(String[] args)
-    {
-        System.out.println( "Hello World!" );
-    }
-
+public class App {
     static final int INVALID = 0;
     static final int SCALENE = 1;
     static final int EQUALATERAL = 2;
     static final int ISOCELES = 3;
 
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+
     public static int classifyTriangle(int a, int b, int c) {
 
-//        delay();
+        //        delay();
 
         // Sort the sides so that a <= b <= c
         if (a > b) {

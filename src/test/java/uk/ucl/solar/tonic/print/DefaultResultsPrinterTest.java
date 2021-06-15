@@ -15,14 +15,8 @@
  */
 package uk.ucl.solar.tonic.print;
 
-import static org.junit.Assert.*;
 import com.google.common.collect.Lists;
 import com.opencsv.CSVReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -32,8 +26,16 @@ import org.uma.jmetal.solution.binarysolution.BinarySolution;
 import org.uma.jmetal.solution.binarysolution.impl.DefaultBinarySolution;
 import uk.ucl.solar.tonic.exception.TonicException;
 
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+
 /**
- *
  * @author Giovani
  */
 public class DefaultResultsPrinterTest {
@@ -87,20 +89,20 @@ public class DefaultResultsPrinterTest {
     @Test
     public void testPrint() throws Exception {
         printer.print();
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"Objective1", "Objective2"}, allLines.get(0));
             assertArrayEquals(new String[]{"10.0", "-1.0"}, allLines.get(1));
             assertArrayEquals(new String[]{"11.0", "-10.0"}, allLines.get(2));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"10101"}, allLines.get(0));
             assertArrayEquals(new String[]{"01010"}, allLines.get(1));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"FullExecTime"}, allLines.get(0));
             assertArrayEquals(new String[]{"1024"}, allLines.get(1));
@@ -111,48 +113,48 @@ public class DefaultResultsPrinterTest {
     public void testPrintWithoutHeaders() throws Exception {
         printer.setShouldPrintHeaders(false);
         printer.print();
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"10.0", "-1.0"}, allLines.get(0));
             assertArrayEquals(new String[]{"11.0", "-10.0"}, allLines.get(1));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"10101"}, allLines.get(0));
             assertArrayEquals(new String[]{"01010"}, allLines.get(1));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"1024"}, allLines.get(0));
         }
     }
-    
+
     @Test
     public void testPrintWithoutHeaders2() throws Exception {
         printer.setShouldPrintHeaders(true);
         printer.setObjectiveNames(null);
         printer.setTimeNames(null);
         printer.print();
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"10.0", "-1.0"}, allLines.get(0));
             assertArrayEquals(new String[]{"11.0", "-10.0"}, allLines.get(1));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"10101"}, allLines.get(0));
             assertArrayEquals(new String[]{"01010"}, allLines.get(1));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"1024"}, allLines.get(0));
         }
     }
-    
+
     @Test
     public void testShouldPrintNothing() throws Exception {
         printer.setTimes(new ArrayList<>());

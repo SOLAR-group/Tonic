@@ -16,9 +16,6 @@
 package uk.ucl.solar.tonic;
 
 import gin.edit.Edit;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
@@ -26,9 +23,12 @@ import uk.ucl.solar.tonic.operator.crossover.UniformPatchCrossover;
 import uk.ucl.solar.tonic.operator.mutation.RandomPatchMutation;
 import uk.ucl.solar.tonic.problem.gi.impl.RuntimeGeneticImprovementProblem;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- *
- * @author giova
+ * @author Giovani
  */
 public class Experiment {
 
@@ -41,8 +41,8 @@ public class Experiment {
                 100,
                 100,
                 100,
-                new UniformPatchCrossover(100),
-                new RandomPatchMutation(80, Edit.getEditClassesOfTypes(allowableEditTypesTree)),
+                new UniformPatchCrossover(1.0),
+                new RandomPatchMutation(0.8, Edit.getEditClassesOfTypes(allowableEditTypesTree)),
                 new BinaryTournamentSelection<>(),
                 new SequentialSolutionListEvaluator<>());
         runtimeGeneticImprovementProblem.nextMethod();

@@ -18,13 +18,13 @@ package uk.ucl.solar.tonic.solution;
 import gin.Patch;
 import gin.SourceFile;
 import gin.edit.Edit;
+import org.uma.jmetal.solution.AbstractSolution;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import org.uma.jmetal.solution.AbstractSolution;
 
 /**
- *
  * @author Giovani
  */
 public class PatchSolution extends AbstractSolution<Edit> {

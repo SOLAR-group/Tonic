@@ -8,19 +8,17 @@ import org.junit.Test;
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-{
+public class AppTest {
     /**
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    public void shouldAnswerWithTrue() {
+        assertTrue(true);
     }
 
     private void checkClassification(int[][] triangles, int expectedResult) {
-        for (int[] triangle: triangles) {
+        for (int[] triangle : triangles) {
             int triangleType = App.classifyTriangle(triangle[0], triangle[1], triangle[2]);
             assertEquals(expectedResult, triangleType);
         }
@@ -40,13 +38,13 @@ public class AppTest
 
     @org.junit.Test
     public void testIsocelesTriangles() throws Exception {
-        int[][] isocelesTriangles = {{100, 90, 90}, {1000, 900, 900}, {3,2,2}, {30,16,16}};
+        int[][] isocelesTriangles = {{100, 90, 90}, {1000, 900, 900}, {3, 2, 2}, {30, 16, 16}};
         checkClassification(isocelesTriangles, App.ISOCELES);
     }
 
     @org.junit.Test
     public void testScaleneTriangles() throws Exception {
-        int[][] scaleneTriangles = {{5, 4, 3}, {1000, 900, 101}, {3,20,21}, {999, 501, 600}};
+        int[][] scaleneTriangles = {{5, 4, 3}, {1000, 900, 101}, {3, 20, 21}, {999, 501, 600}};
         checkClassification(scaleneTriangles, App.SCALENE);
     }
 }

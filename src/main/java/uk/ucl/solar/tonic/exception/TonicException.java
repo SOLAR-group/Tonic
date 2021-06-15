@@ -16,7 +16,6 @@
 package uk.ucl.solar.tonic.exception;
 
 /**
- *
  * @author Giovani
  */
 public class TonicException extends Exception {

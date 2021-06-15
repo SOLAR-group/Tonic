@@ -15,18 +15,18 @@
  */
 package uk.ucl.solar.tonic.print.gi;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import uk.ucl.solar.tonic.exception.TonicException;
 import uk.ucl.solar.tonic.print.DefaultResultsPrinter;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- *
  * @author Giovani
  */
 public class GIResultsPrinter extends DefaultResultsPrinter<PatchSolution> {
@@ -96,7 +96,7 @@ public class GIResultsPrinter extends DefaultResultsPrinter<PatchSolution> {
     private void printPatchesToFile() throws TonicException, IOException {
         if (solutionList != null && !solutionList.isEmpty()
                 && patchColumnsNames != null && !patchColumnsNames.isEmpty()) {
-            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, patchFileName))) {
+            try (FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, patchFileName))) {
                 this.printHeader(patchColumnsNames, writer);
                 for (PatchSolution solution : solutionList) {
                     List<?> attributes = patchColumnsNames.stream()

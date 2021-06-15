@@ -19,34 +19,28 @@ import com.google.common.collect.Lists;
 import com.opencsv.CSVReader;
 import gin.SourceFileTree;
 import gin.edit.Edit;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.io.File;
+import java.io.FileReader;
+import java.util.*;
+
+import static org.junit.Assert.*;
+
 /**
- *
  * @author Giovani
  */
 public class DefaultGIResultsPrinterTest {
 
+    private final static String verySmallExampleSourceFilename = "unittests/Small.java";
+    private final static List<Edit.EditType> allowableEditTypesTree = Arrays.asList(Edit.EditType.STATEMENT, Edit.EditType.MODIFY_STATEMENT);
     private final File outputDir = FileUtils.getFile("./unittests/tempdir");
     private DefaultGIResultsPrinter printer;
     private List<PatchSolution> solutions;
-
-    private final static String verySmallExampleSourceFilename = "unittests/Small.java";
-    private final static List<Edit.EditType> allowableEditTypesTree = Arrays.asList(Edit.EditType.STATEMENT, Edit.EditType.MODIFY_STATEMENT);
-
     private SourceFileTree sourceFileTree;
 
     public DefaultGIResultsPrinterTest() {
@@ -101,35 +95,35 @@ public class DefaultGIResultsPrinterTest {
     @Test
     public void testPrint() throws Exception {
         printer.print();
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"Objective1", "Objective2"}, allLines.get(0));
             assertArrayEquals(new String[]{"10.0", "-1.0"}, allLines.get(1));
             assertArrayEquals(new String[]{"15.0", "-0.5"}, allLines.get(2));
         }
 
-        try ( Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
+        try (Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
             String line = reader.nextLine();
             assertEquals("gin.edit.statement.SwapStatement unittests/Small.java:28 <-> unittests/Small.java:6,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
-                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
-                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
+                            + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
+                            + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
                     line.replace("\\", "/"));
             line = reader.nextLine();
             assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  unittests/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
-                    + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
+                            + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
                     line.replace("\\", "/"));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"FullExecTime"}, allLines.get(0));
             assertArrayEquals(new String[]{"1024"}, allLines.get(1));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "PATCH.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "PATCH.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"MethodName", "MethodIndex", "Patch", "Compiled", "AllTestsPassed", "NTests", "NPassed", "NFailed", "TotalExecutionTime(ms)", "Fitness", "FitnessImprovement", "TimeStamp"}, allLines.get(0));
             assertArrayEquals(new String[]{"", "", "", "", "", "10", "6", "4", "", "", "", "1000"}, allLines.get(1));
@@ -141,33 +135,33 @@ public class DefaultGIResultsPrinterTest {
     public void testPrintWithoutHeaders() throws Exception {
         printer.setShouldPrintHeaders(false);
         printer.print();
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"10.0", "-1.0"}, allLines.get(0));
             assertArrayEquals(new String[]{"15.0", "-0.5"}, allLines.get(1));
         }
 
-        try ( Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
+        try (Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
             String line = reader.nextLine();
             assertEquals("gin.edit.statement.SwapStatement unittests/Small.java:28 <-> unittests/Small.java:6,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
-                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
-                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
+                            + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
+                            + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
                     line.replace("\\", "/"));
             line = reader.nextLine();
             assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  unittests/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
-                    + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
+                            + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
                     line.replace("\\", "/"));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"1024"}, allLines.get(0));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "PATCH.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "PATCH.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"", "", "", "", "", "10", "6", "4", "", "", "", "1000"}, allLines.get(0));
             assertArrayEquals(new String[]{"", "", "", "", "", "10", "7", "3", "", "", "", "2000"}, allLines.get(1));
@@ -180,40 +174,40 @@ public class DefaultGIResultsPrinterTest {
         printer.setObjectiveNames(null);
         printer.setTimeNames(null);
         printer.print();
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "FUN.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"10.0", "-1.0"}, allLines.get(0));
             assertArrayEquals(new String[]{"15.0", "-0.5"}, allLines.get(1));
         }
 
-        try ( Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
+        try (Scanner reader = new Scanner(FileUtils.getFile(outputDir.getAbsolutePath(), "VAR.csv"))) {
             String line = reader.nextLine();
             assertEquals("gin.edit.statement.SwapStatement unittests/Small.java:28 <-> unittests/Small.java:6,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
-                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
-                    + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:29 OR -> EQUALS,"
+                            + "gin.edit.statement.ReplaceStatement unittests/Small.java:42 -> unittests/Small.java:43,"
+                            + "gin.edit.statement.ReplaceStatement unittests/Small.java:12 -> unittests/Small.java:6",
                     line.replace("\\", "/"));
             line = reader.nextLine();
             assertEquals("gin.edit.modifynode.UnaryOperatorReplacement  unittests/Small.java:44 POSTFIX_INCREMENT -> PREFIX_INCREMENT,"
-                    + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
-                    + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
+                            + "gin.edit.statement.CopyStatement unittests/Small.java:6 -> unittests/Small.java:42:42,"
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:31 LESS -> GREATER_EQUALS,"
+                            + "gin.edit.modifynode.BinaryOperatorReplacement  unittests/Small.java:37 GREATER -> LESS",
                     line.replace("\\", "/"));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "TIME.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"1024"}, allLines.get(0));
         }
 
-        try ( CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "PATCH.csv")))) {
+        try (CSVReader reader = new CSVReader(new FileReader(FileUtils.getFile(outputDir.getAbsolutePath(), "PATCH.csv")))) {
             List<String[]> allLines = reader.readAll();
             assertArrayEquals(new String[]{"MethodName", "MethodIndex", "Patch", "Compiled", "AllTestsPassed", "NTests", "NPassed", "NFailed", "TotalExecutionTime(ms)", "Fitness", "FitnessImprovement", "TimeStamp"}, allLines.get(0));
             assertArrayEquals(new String[]{"", "", "", "", "", "10", "6", "4", "", "", "", "1000"}, allLines.get(1));
             assertArrayEquals(new String[]{"", "", "", "", "", "10", "7", "3", "", "", "", "2000"}, allLines.get(2));
         }
     }
-    
+
     @Test
     public void testShouldPrintNothing() throws Exception {
         printer.setTimes(new ArrayList<>());
@@ -221,7 +215,7 @@ public class DefaultGIResultsPrinterTest {
         printer.print();
         assertFalse(FileUtils.getFile(outputDir.getAbsolutePath(), "PATCH.csv").exists());
     }
-    
+
     @Test
     public void testShouldPrintNothing2() throws Exception {
         printer.setTimes(new ArrayList<>());

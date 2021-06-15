@@ -15,15 +15,15 @@
  */
 package uk.ucl.solar.tonic.operator.crossover;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import org.apache.commons.lang3.Validate;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
- *
  * @author Giovani
  */
 public class UniformPatchCrossover implements CrossoverOperator<PatchSolution> {
@@ -84,8 +84,8 @@ public class UniformPatchCrossover implements CrossoverOperator<PatchSolution> {
 
     private List<PatchSolution> doCrossover(double probability, PatchSolution parent1, PatchSolution parent2) {
         List<PatchSolution> offspring = new ArrayList<>(2);
-        offspring.add((PatchSolution) parent1.copy());
-        offspring.add((PatchSolution) parent2.copy());
+        offspring.add(parent1.copy());
+        offspring.add(parent2.copy());
 
         if (this.random.nextDouble() < probability) {
             for (int variableIndex = 0; variableIndex < parent1.getNumberOfVariables() && variableIndex < parent2.getNumberOfVariables(); variableIndex++) {

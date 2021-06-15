@@ -25,21 +25,6 @@ import gin.test.UnitTest;
 import gin.test.UnitTestResultSet;
 import gin.util.MavenUtils;
 import gin.util.Project;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -48,21 +33,27 @@ import org.uma.jmetal.problem.AbstractGenericProblem;
 import uk.ucl.solar.tonic.base.TargetMethod;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.*;
+
 /**
- *
  * @author Giovani
  */
 public abstract class GeneticImprovementProblem extends AbstractGenericProblem<PatchSolution> {
 
+    private static final String TEST_SEPARATOR = ",";
+    private static final String METHOD_SEPARATOR = ".";
     /*============== Required  ==============*/
     protected File projectDirectory;
     protected File methodFile;
-
     /*============== Optional (required only for certain types of projects, ignored otherwise)  ==============*/
     protected String projectName = null;
     protected String classPath = null;
     protected File mavenHome = null;
-
     /*============== Optional (setup)  ==============*/
     protected Long timeoutMS = 10000L;
     protected Integer reps = 1;
@@ -73,11 +64,8 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
     protected String editType = Edit.EditType.STATEMENT.toString();
     protected Random random = new Random();
     protected Long seed;
-
     /*============== Other  ==============*/
     protected Project project = null;
-    private static final String TEST_SEPARATOR = ",";
-    private static final String METHOD_SEPARATOR = ".";
     protected Set<UnitTest> testData = new LinkedHashSet<>();
 
     /*============== Structures holding all project data  ==============*/
@@ -330,7 +318,7 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
 
         if (properties.containsKey("timeoutMS")) {
             property = properties.getProperty("timeoutMS");
-            long timeoutMS = Long.valueOf(property);
+            long timeoutMS = Long.parseLong(property);
             this.setTimeoutMS(timeoutMS);
         }
 
@@ -366,7 +354,7 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
 
         if (properties.containsKey("seed")) {
             property = properties.getProperty("seed");
-            long seed = Long.valueOf(property);
+            long seed = Long.parseLong(property);
             this.setSeed(seed);
         }
     }
@@ -487,7 +475,7 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
             while (data != null) {
 
                 String[] tests = data.get("Tests").split(TEST_SEPARATOR);
-                List<UnitTest> ginTests = new ArrayList();
+                List<UnitTest> ginTests = new ArrayList<>();
                 for (String test : tests) {
                     UnitTest ginTest = null;
                     ginTest = UnitTest.fromString(test);
@@ -547,10 +535,9 @@ public abstract class GeneticImprovementProblem extends AbstractGenericProblem<P
             return null;
         }
         File[] files = moduleDir.listFiles((dir, name) -> name.equals(filename));
-        if (files.length == 0) {
+        if (files != null && files.length == 0) {
             return null;
-        }
-        if (files.length > 1) {
+        } else if (files.length > 1) {
             Logger.error("Two files found with the same name in: " + this.projectDirectory);
             return null;
         }

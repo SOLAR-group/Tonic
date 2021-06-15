@@ -16,12 +16,12 @@
 package uk.ucl.solar.tonic.base;
 
 import gin.test.UnitTest;
+
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
 /**
- *
  * @author Giovani
  */
 public class TargetMethod {

@@ -16,13 +16,13 @@
 package uk.ucl.solar.tonic.print.gi;
 
 import com.google.common.collect.Lists;
-import java.io.File;
-import java.util.List;
 import org.apache.commons.collections4.ListUtils;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.io.File;
+import java.util.List;
+
 /**
- *
  * @author Giovani
  */
 public class DefaultGIResultsPrinter extends GIResultsPrinter {

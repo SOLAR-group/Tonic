@@ -16,13 +16,13 @@
 package uk.ucl.solar.tonic.operator.mutation;
 
 import gin.edit.Edit;
-import java.util.List;
-import java.util.Random;
 import org.uma.jmetal.operator.mutation.MutationOperator;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.util.List;
+import java.util.Random;
+
 /**
- *
  * @author Giovani
  */
 public class RandomPatchMutation implements MutationOperator<PatchSolution> {

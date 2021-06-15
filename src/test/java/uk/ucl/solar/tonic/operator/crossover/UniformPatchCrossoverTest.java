@@ -17,18 +17,16 @@ package uk.ucl.solar.tonic.operator.crossover;
 
 import gin.SourceFileTree;
 import gin.edit.Edit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ucl.solar.tonic.solution.PatchSolution;
 
+import java.util.*;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
 /**
- *
  * @author Giovani
  */
 public class UniformPatchCrossoverTest {
@@ -72,11 +70,11 @@ public class UniformPatchCrossoverTest {
         assertEquals(2, offspring.size());
         assertEquals(4, offspring.get(0).getNumberOfVariables());
         assertEquals(4, offspring.get(1).getNumberOfVariables());
-        
+
         assertArrayEquals(solution.getVariables().toArray(), offspring.get(0).getVariables().toArray());
         assertArrayEquals(solution2.getVariables().toArray(), offspring.get(1).getVariables().toArray());
     }
-    
+
     @Test
     public void testSuccessfull() {
         Random random = new Random(1234);
@@ -98,8 +96,9 @@ public class UniformPatchCrossoverTest {
         solutions.add(solution2);
 
         UniformPatchCrossover operator = new UniformPatchCrossover(1.0);
-        operator.random = new Random(){
+        operator.random = new Random() {
             int count = 0;
+
             @Override
             public double nextDouble() {
                 return count++ % 2;
@@ -110,19 +109,19 @@ public class UniformPatchCrossoverTest {
         assertEquals(2, offspring.size());
         assertEquals(4, offspring.get(0).getNumberOfVariables());
         assertEquals(4, offspring.get(1).getNumberOfVariables());
-        
+
         assertEquals(solution.getVariables().get(0), offspring.get(0).getVariables().get(0));
         assertEquals(solution2.getVariables().get(1), offspring.get(0).getVariables().get(1));
         assertEquals(solution.getVariables().get(2), offspring.get(0).getVariables().get(2));
         assertEquals(solution2.getVariables().get(3), offspring.get(0).getVariables().get(3));
-        
+
         assertEquals(solution2.getVariables().get(0), offspring.get(1).getVariables().get(0));
         assertEquals(solution.getVariables().get(1), offspring.get(1).getVariables().get(1));
         assertEquals(solution2.getVariables().get(2), offspring.get(1).getVariables().get(2));
         assertEquals(solution.getVariables().get(3), offspring.get(1).getVariables().get(3));
-        
+
     }
-    
+
     @Test
     public void testSuccessfullDifferentSizes() {
         Random random = new Random(1234);
@@ -142,8 +141,9 @@ public class UniformPatchCrossoverTest {
         solutions.add(solution2);
 
         UniformPatchCrossover operator = new UniformPatchCrossover(1.0);
-        operator.random = new Random(){
+        operator.random = new Random() {
             int count = 0;
+
             @Override
             public double nextDouble() {
                 return count++ % 2;
@@ -154,10 +154,10 @@ public class UniformPatchCrossoverTest {
         assertEquals(2, offspring.size());
         assertEquals(2, offspring.get(0).getNumberOfVariables());
         assertEquals(4, offspring.get(1).getNumberOfVariables());
-        
+
         assertEquals(solution.getVariables().get(0), offspring.get(0).getVariables().get(0));
         assertEquals(solution2.getVariables().get(1), offspring.get(0).getVariables().get(1));
-        
+
         assertEquals(solution2.getVariables().get(0), offspring.get(1).getVariables().get(0));
         assertEquals(solution.getVariables().get(1), offspring.get(1).getVariables().get(1));
         assertEquals(solution2.getVariables().get(2), offspring.get(1).getVariables().get(2));

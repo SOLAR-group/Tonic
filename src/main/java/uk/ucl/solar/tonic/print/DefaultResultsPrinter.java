@@ -17,6 +17,12 @@ package uk.ucl.solar.tonic.print;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.Validate;
+import org.pmw.tinylog.Logger;
+import org.uma.jmetal.solution.Solution;
+import uk.ucl.solar.tonic.exception.TonicException;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,14 +30,8 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.Validate;
-import org.pmw.tinylog.Logger;
-import org.uma.jmetal.solution.Solution;
-import uk.ucl.solar.tonic.exception.TonicException;
 
 /**
- *
  * @author Giovani
  */
 public class DefaultResultsPrinter<S extends Solution> implements Serializable {
@@ -222,7 +222,7 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
 
     protected void printVariablesToFile() throws IOException {
         if (solutionList != null && !solutionList.isEmpty()) {
-            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, varFileName))) {
+            try (FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, varFileName))) {
                 for (Solution<?> solution : solutionList) {
                     printLine(solution.getVariables(), writer);
                 }
@@ -232,7 +232,7 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
 
     protected void printObjectivesToFile() throws IOException, TonicException {
         if (solutionList != null && !solutionList.isEmpty()) {
-            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, funFileName))) {
+            try (FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, funFileName))) {
                 int numberOfObjectives = solutionList.get(0).getNumberOfObjectives();
                 if (isObjectiveToBeMinimized != null && isObjectiveToBeMinimized.size() != numberOfObjectives) {
                     throw new TonicException("The size of list minimizeObjective is not correct: " + isObjectiveToBeMinimized.size());
@@ -260,7 +260,7 @@ public class DefaultResultsPrinter<S extends Solution> implements Serializable {
 
     protected void printTimesTofile() throws IOException, TonicException {
         if (times != null && !times.isEmpty()) {
-            try ( FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, timeFileName))) {
+            try (FileWriter writer = new FileWriter(FileUtils.getFile(outputDir, timeFileName))) {
                 if (timeNames != null) {
                     if (timeNames.size() != times.size()) {
                         throw new TonicException("The size of list timeNames is not correct: " + timeNames.size());
